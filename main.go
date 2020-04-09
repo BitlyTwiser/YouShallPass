@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"flags"
+	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"log"
 )
 
 /*
@@ -25,11 +25,10 @@ type App struct {
 	router *mux.Router
 }
 
-func init(){
+func init() {
 	flag.IntVar(&count, "length", 8, "Length of the password to generate.")
 	flag.BoolVar(*webServer, "server", false, "Starts a web server to be queried for passwords.")
 }
-
 
 func run() {
 	flag.Parse()
@@ -55,7 +54,6 @@ func run() {
 
 func (a App) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
 
-
 func newRouter() App {
 	a := App{router: mux.NewRouter()}
 	a.router.Use(mux.CORSMethodMiddleware(a.router))
@@ -64,7 +62,7 @@ func newRouter() App {
 	return a
 }
 
-func main(){
+func main() {
 
 	err := godotenv.Load()
 	if err != nil {
@@ -73,6 +71,6 @@ func main(){
 	run()
 }
 
-func genGuid(){
+func genGuid() {
 
 }
