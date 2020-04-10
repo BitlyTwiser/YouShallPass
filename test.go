@@ -12,8 +12,9 @@ import (
 	"log"
 	mRand "math/rand"
 	"os"
-	//"strconv"
+	"strconv"
 	"strings"
+	"encoding/json"
 	"time"
 )
 
@@ -21,11 +22,11 @@ var (
 	count int
 	webServer bool
 	wl    string
+	special bool
+	upper bool
 	list        []string
-	bU          []string
 	baseList    = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 	baseSpecial = []string{"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "-", ">", "<", "?", ",", ".", "/", "|", "\\", " "}
-	data        []string
 	baseInt = []string{"1","2","3","4","5","6","7","8","9","10"}
 )
 
@@ -53,7 +54,12 @@ func main() {
 		os.Exit(0)
 	}
 	if count < 8 {
-		fmt.Println("Be aware! Password length is less than the minumum recommended length of 8 characters.")
+		s, err := unquoteCodePoint("\\U0001F631")
+		if err != nil{
+			log.Printf("Error converting unicode... Error: %v", err)
+		}
+		fmt.Printf("%s: Be aware! Password length is less than the minumum recommended length of 8 characters, we are quitting because of this.\n", s)
+		os.Exit(0)
 	}
 	if webServer {
 		err := godotenv.Load()
@@ -70,6 +76,11 @@ func main() {
 		fmt.Println(pass.genPass(count))
 	}
 
+}
+
+func unquoteCodePoint(s string) (string, error) {
+    r, err := strconv.ParseInt(strings.TrimPrefix(s, "\\U"), 16, 32)
+    return string(r), err
 }
 
 func run() {
@@ -98,12 +109,56 @@ func newRouter() App {
 	a := App{router: mux.NewRouter()}
 	a.router.Use(mux.CORSMethodMiddleware(a.router))
 	a.router.Handle("/favicon.ico", http.NotFoundHandler())
-	a.router.HandleFunc("/password", genPassWeb).Methods(http.MethodGet)
+	a.router.HandleFunc("/password", genPassWeb).Methods(http.MethodPost)
 	return a
 }
 
 func genPassWeb(w http.ResponseWriter, req *http.Request){
+	
+	//fmt.Println(req.PostFormValue("length"))
+	//fmt.Println(req.PostFormValue("special"))
+	err := req.ParseForm()
+	if err != nil{
+		log.Printf("Error parsing form. Error: %v", err)
+	}
+	
+	for k, v := range req.Form{
+		switch strings.ToLower(k) {
+		case "length":
+			c, err := strconv.Atoi(v[0])
+			if err !=nil{
+				log.Printf("error converting string to integer value. Error: %v", err)
+				http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
+			} else {
+				count = c
+			}
+			
+		case "special": 
+			s, err := strconv.ParseBool(v[0])
+			if err != nil{
+				log.Printf("Error parsing bool value. Value given: %v", v)
+				http.Error(w, fmt.Sprintf("Error with provided value for special characters. Value Given: %v", err), http.StatusBadRequest)
+			} else {
+				special = s
+			}
+		case "upper": 
+			s, err := strconv.ParseBool(v[0])
+			if err != nil{
+				log.Printf("Error parsing bool value. Value given: %v", v)
+				http.Error(w, fmt.Sprintf("Error with provided value for special characters. Value Given: %v", err), http.StatusBadRequest)
+			} else {
+				upper = s
+			}
+		default:
+			log.Printf("It appears a non usable value was provided. Value: %v", v)
+			http.Error(w, "No valid values provided. Please provide at minumum a length value.", http.StatusBadRequest)
+		}
+	}
 
+	w.Header().Set("Content-Type", "application/json")
+	pass := wordlist()
+	p, _ := json.Marshal(map[string]string{"Password": pass.genPass(count)} )
+	w.Write(p)
 }
 
 func getChars() passGen {
@@ -130,6 +185,8 @@ func getChars() passGen {
 
 //Obtains words from wordlist and inserts into slice to obtain random values.
 func wordlist() passGen {
+
+	var data []string
 
 	content, err := os.Open("/home/smallz/Documents/gitclones/YouShallPass/parsed.csv")
 	if err != nil {
