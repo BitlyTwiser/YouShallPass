@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"html/template"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -28,6 +29,7 @@ var (
 	baseList    = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 	baseSpecial = []string{"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "-", ">", "<", "?", ",", ".", "/", "|", "\\", " "}
 	baseInt = []string{"1","2","3","4","5","6","7","8","9","10"}
+	tpl *template.Template
 )
 
 type App struct {
@@ -45,6 +47,7 @@ func init() {
 	flag.IntVar(&count, "length", 8, "Length of the password to generate.")
 	flag.StringVar(&wl, "wordlist", "", "Location of wordlist to utilize for password generation.")
 	flag.BoolVar(&webServer, "server", false, "Starts an Rest API to be queried for passwords.")
+	tpl = template.Must(template.ParseGlob("templates/*"))
 }
 
 func main() {
@@ -66,7 +69,8 @@ func main() {
 		if err != nil {
 			log.Printf("Error loading environment variables. Error: %v", err)
 		}
-		run()
+		go run()
+		web()
 	}
 	if len(wl) > 0 || wl != "" {
 		pass := wordlist()
@@ -76,6 +80,18 @@ func main() {
 		fmt.Println(pass.genPass(count))
 	}
 
+}
+
+func web(){
+	http.Handle("/favicon.ico", http.NotFoundHandler())
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request){
+		err := tpl.ExecuteTemplate(w, "index.html", nil)
+		if err != nil{
+			log.Printf("Error executing template: %v", err)
+		}
+	})
+	fmt.Println("Listening on port", os.Getenv("WEBPORT"))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", os.Getenv("WEBPORT")), nil))
 }
 
 func unquoteCodePoint(s string) (string, error) {
@@ -115,8 +131,6 @@ func newRouter() App {
 
 func genPassWeb(w http.ResponseWriter, req *http.Request){
 	
-	//fmt.Println(req.PostFormValue("length"))
-	//fmt.Println(req.PostFormValue("special"))
 	err := req.ParseForm()
 	if err != nil{
 		log.Printf("Error parsing form. Error: %v", err)
@@ -129,10 +143,13 @@ func genPassWeb(w http.ResponseWriter, req *http.Request){
 			if err !=nil{
 				log.Printf("error converting string to integer value. Error: %v", err)
 				http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
+			} 
+			if c < 8 {
+				log.Printf("Value was to small, forcing value upgrade to 8 chars. Initial Value: %v", c)
+				count = 8
 			} else {
 				count = c
-			}
-			
+			}			
 		case "special": 
 			s, err := strconv.ParseBool(v[0])
 			if err != nil{
@@ -207,7 +224,7 @@ func wordlist() passGen {
 	for _, char := range getChars().list {
 		data = append(data, char)
 	}
-
+	
 	return passGen{list: data, specialList: getChars().specialList, baseUpper: getChars().baseUpper, baseInts: getChars().baseInts}
 
 }
