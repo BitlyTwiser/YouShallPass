@@ -83,6 +83,7 @@ func main() {
 }
 
 func web(){
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./public"))))	
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request){
 		err := tpl.ExecuteTemplate(w, "index.html", nil)

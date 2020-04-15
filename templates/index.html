@@ -2,65 +2,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        .buttonHolder {
-            text-align: center; 
-        }
-
-        .button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: flex; 
-            justify-content: center; 
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-        }
-        h2 {
-            text-align: center;
-        }
-        p {
-            text-align: center;
-        }
-    </style>
-    <script>
-    function GenPassword() {
-        const userAction = async () => {
-        const response = await fetch('http://127.0.0.1:8002/password', {
-            method: 'POST',
-            body: {"length":10}, // string or object
-            headers: {
-            'Content-Type': 'application/json'
-            }
-        });
-        const myJson = await response.json(); //extract JSON from the http response
-        // do something with myJson
-        }
-    }
-    </script>
+    <meta charset="UTF-8">
+    <title>Simple Password Generator</title>
+    <link rel="stylesheet" href="static/main.css">
 </head>
+<main id="app">
 <body>
 <hr>
 <h2>Password Generator</h2>
 <p>Obtain a Randomly Generated Password</p>
 <hr>
 <div class="buttonHolder">
-<form onsubmit="javascript:GenPassword()">
+<form id="myForm">
     <label for="length">Length:</label><br>
-    <input type="text" id="length" name="length" value="8"><br>
+    <input type="text" id="length" name="length" placeholder="8"><br>
     <input type="checkbox" id="specchar" value="specchar">
     <label for="specchar">Special Character</label><br>
     <input type="checkbox" id="uppercase" value="uppercase">
     <label for="uppercase">Upper Case Characters</label><br>
-    <input type="submit" class="button" value="Submit">
-  </form> 
+    <button type="submit">Generate</button>
+</form> 
 </div>
-<br>
+</div>
 <hr>
+<br>
 </body>
+</main>
+<script>
+    window.addEventListener( "load", function () {
+  function sendData() {
+    const XHR = new XMLHttpRequest();
+
+    // Bind the FormData object and the form element
+    const FD = new FormData( form );
+
+    // Define what happens on successful data submission
+    XHR.addEventListener( "load", function(event) {
+      alert( event.target.responseText );
+    } );
+
+    // Define what happens in case of error
+    XHR.addEventListener( "error", function( event ) {
+      alert( 'Oops! Something went wrong.' );
+    } );
+
+    // Set up our request
+    XHR.open( "POST", "http://127.0.0.1:8002/password" );
+
+    // The data sent is what the user provided in the form
+    XHR.send( FD );
+  }
+ 
+  // Access the form element...
+  const form = document.getElementById( "myForm" );
+
+  // ...and take over its submit event.
+  form.addEventListener( "submit", function ( event ) {
+    event.preventDefault();
+
+    sendData();
+  } );
+} );
+</script>
 </html>
