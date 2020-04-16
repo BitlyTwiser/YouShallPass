@@ -14,13 +14,16 @@
 <hr>
 <div class="buttonHolder">
 <form id="myForm">
-    <label for="length">Length:</label><br>
+    <label for="length">Password Length:</label><br>
     <input type="text" id="length" name="length" placeholder="8"><br>
-    <input type="checkbox" id="specchar" value="specchar">
+
+    <input type="checkbox" id="specchar" name="specchar">
     <label for="specchar">Special Character</label><br>
-    <input type="checkbox" id="uppercase" value="uppercase">
+
+    <input type="checkbox" id="uppercase" name="uppercase">
     <label for="uppercase">Upper Case Characters</label><br>
-    <button type="submit">Generate</button>
+    
+    <input type="submit" value="Generate Password">
 </form> 
 </div>
 </div>
@@ -33,7 +36,18 @@
   function sendData() {
     const XHR = new XMLHttpRequest();
 
+    var urlEncodedDataPairs = [];
+
+    var inputs = document.getElementById("myForm").elements;
+    urlEncodedDataPairs.push(encodeURIComponent("length") + "=" + encodeURIComponent(inputs[0].value));
+    urlEncodedDataPairs.push(encodeURIComponent("uppercase") + "=" +encodeURIComponent(inputs["uppercase"].checked));
+    urlEncodedDataPairs.push(encodeURIComponent("specchar") + "=" +encodeURIComponent(inputs["specchar"].checked));
+    console.log(inputs[0].value)
+    console.log(inputs["uppercase"].checked)
+    console.log(inputs["specchar"].checked)
     // Bind the FormData object and the form element
+    console.log(urlEncodedDataPairs)
+    urlEncodedData = urlEncodedDataPairs.join( '&' ).replace( /%20/g, '+' );
     const FD = new FormData( form );
 
     // Define what happens on successful data submission
@@ -48,9 +62,16 @@
 
     // Set up our request
     XHR.open( "POST", "http://127.0.0.1:8002/password" );
+    XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
+    //FD.append("length", inputs[0].value)
+    //FD.append("uppercase", inputs["uppercase"].checked)
+    //FD.append("specchar", inputs["specchar"].checked)
     // The data sent is what the user provided in the form
-    XHR.send( FD );
+    //encodeURIComponent()
+    //data = JSON.stringify({"length": inputs[0].value, "uppercase": inputs["uppercase"].checked, "specchar": inputs["specchar"].checked})
+    console.log(urlEncodedData)
+    XHR.send(urlEncodedData);
   }
  
   // Access the form element...
@@ -59,7 +80,6 @@
   // ...and take over its submit event.
   form.addEventListener( "submit", function ( event ) {
     event.preventDefault();
-
     sendData();
   } );
 } );

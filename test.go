@@ -136,14 +136,16 @@ func genPassWeb(w http.ResponseWriter, req *http.Request){
 	if err != nil{
 		log.Printf("Error parsing form. Error: %v", err)
 	}
-	
+	fmt.Println(req)
+	fmt.Println(req.Form)
 	for k, v := range req.Form{
+		fmt.Printf("Key: %v, Value: %v", k, v)
 		switch strings.ToLower(k) {
 		case "length":
 			c, err := strconv.Atoi(v[0])
 			if err !=nil{
 				log.Printf("error converting string to integer value. Error: %v", err)
-				http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
+				http.Error(w, "Error utilizing provided length value - Forcing usage of 8 characters.", http.StatusBadRequest)
 			} 
 			if c < 8 {
 				log.Printf("Value was to small, forcing value upgrade to 8 chars. Initial Value: %v", c)
@@ -151,7 +153,7 @@ func genPassWeb(w http.ResponseWriter, req *http.Request){
 			} else {
 				count = c
 			}			
-		case "special": 
+		case "specchar": 
 			s, err := strconv.ParseBool(v[0])
 			if err != nil{
 				log.Printf("Error parsing bool value. Value given: %v", v)
@@ -159,7 +161,7 @@ func genPassWeb(w http.ResponseWriter, req *http.Request){
 			} else {
 				special = s
 			}
-		case "upper": 
+		case "uppercase": 
 			s, err := strconv.ParseBool(v[0])
 			if err != nil{
 				log.Printf("Error parsing bool value. Value given: %v", v)
