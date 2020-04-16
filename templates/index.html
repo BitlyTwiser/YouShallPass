@@ -26,6 +26,9 @@
     <input type="submit" value="Generate Password">
 </form> 
 </div>
+<div>
+    <p id="pasword"></p>
+</div>
 </div>
 <hr>
 <br>
@@ -40,19 +43,17 @@
 
     var inputs = document.getElementById("myForm").elements;
     urlEncodedDataPairs.push(encodeURIComponent("length") + "=" + encodeURIComponent(inputs[0].value));
-    urlEncodedDataPairs.push(encodeURIComponent("uppercase") + "=" +encodeURIComponent(inputs["uppercase"].checked));
-    urlEncodedDataPairs.push(encodeURIComponent("specchar") + "=" +encodeURIComponent(inputs["specchar"].checked));
-    console.log(inputs[0].value)
-    console.log(inputs["uppercase"].checked)
-    console.log(inputs["specchar"].checked)
+    urlEncodedDataPairs.push(encodeURIComponent("uppercase") + "=" + encodeURIComponent(inputs["uppercase"].checked));
+    urlEncodedDataPairs.push(encodeURIComponent("specchar") + "=" + encodeURIComponent(inputs["specchar"].checked));
+
     // Bind the FormData object and the form element
-    console.log(urlEncodedDataPairs)
     urlEncodedData = urlEncodedDataPairs.join( '&' ).replace( /%20/g, '+' );
     const FD = new FormData( form );
 
     // Define what happens on successful data submission
     XHR.addEventListener( "load", function(event) {
-      alert( event.target.responseText );
+        document.getElementById("pasword").innerHTML = `Password: ${JSON.parse(event.target.responseText)["Password"]}`;
+      //alert( event.target.responseText );
     } );
 
     // Define what happens in case of error
@@ -64,13 +65,8 @@
     XHR.open( "POST", "http://127.0.0.1:8002/password" );
     XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    //FD.append("length", inputs[0].value)
-    //FD.append("uppercase", inputs["uppercase"].checked)
-    //FD.append("specchar", inputs["specchar"].checked)
+
     // The data sent is what the user provided in the form
-    //encodeURIComponent()
-    //data = JSON.stringify({"length": inputs[0].value, "uppercase": inputs["uppercase"].checked, "specchar": inputs["specchar"].checked})
-    console.log(urlEncodedData)
     XHR.send(urlEncodedData);
   }
  
