@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"html/template"
 	"log"
 	mRand "math/rand"
@@ -14,10 +17,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -272,8 +271,9 @@ func (l *passGen) passValidation(pass string, count int) string {
 			}
 		} else {
 			if strings.Contains(pass, val) {
-				pass = strings.Replace(pass, string(pass[mRand.Intn(len(pass)-7)]), l.mathRand(baseList), -1)
-				break
+				if strings.Contains(pass, val) {
+					pass = strings.Replace(pass, pass[strings.IndexRune(pass, val)], l.mathRand(baseList), -1)
+					continue
 			}
 		}
 	}
@@ -287,9 +287,11 @@ func (l *passGen) passValidation(pass string, count int) string {
 				break
 			}
 		} else {
+			//WE do not want a random value to be replaced here, we need the index of the value to exchange
+			//Use strings.indexrune to determine index of the value and then replace.
 			if strings.Contains(pass, val) {
-				pass = strings.Replace(pass, string(pass[mRand.Intn(len(pass)-7)]), l.mathRand(baseList), -1)
-				break
+				pass = strings.Replace(pass, pass[strings.IndexRune(pass, val)], l.mathRand(baseList), -1)
+				continue
 			}
 		}
 	}
