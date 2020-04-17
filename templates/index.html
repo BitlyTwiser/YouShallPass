@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Password Generator</title>
+    <link rel="stylesheet" href="static/main.css">
+</head>
+<main id="app">
+<body>
+<hr>
+<h2>Password Generator</h2>
+<p>Obtain a Randomly Generated Password</p>
+<hr>
+<div class="buttonHolder">
+<form id="myForm">
+    <label for="length">Password Length:</label><br>
+    <input type="text" id="length" name="length" placeholder="8"><br>
+
+    <input type="checkbox" id="specchar" name="specchar">
+    <label for="specchar">Special Character</label><br>
+
+    <input type="checkbox" id="uppercase" name="uppercase">
+    <label for="uppercase">Upper Case Characters</label><br>
+    
+    <input type="submit" value="Generate Password">
+</form> 
+<hr>
+</div>
+<div>
+    <p id="pasword"></p>
+</div>
+</div>
+<br>
+</body>
+</main>
+<script>
+    window.addEventListener( "load", function () {
+  function sendData() {
+    const XHR = new XMLHttpRequest();
+
+    var urlEncodedDataPairs = [];
+
+    var inputs = document.getElementById("myForm").elements;
+    urlEncodedDataPairs.push(encodeURIComponent("length") + "=" + encodeURIComponent(inputs[0].value));
+    urlEncodedDataPairs.push(encodeURIComponent("uppercase") + "=" + encodeURIComponent(inputs["uppercase"].checked));
+    urlEncodedDataPairs.push(encodeURIComponent("specchar") + "=" + encodeURIComponent(inputs["specchar"].checked));
+
+    // Bind the FormData object and the form element
+    urlEncodedData = urlEncodedDataPairs.join( '&' ).replace( /%20/g, '+' );
+    const FD = new FormData( form );
+
+    // Define what happens on successful data submission
+    XHR.addEventListener( "load", function(event) {
+        document.getElementById("pasword").innerHTML = `Password: ${JSON.parse(event.target.responseText)["Password"]}`;
+      //alert( event.target.responseText );
+    } );
+
+    // Define what happens in case of error
+    XHR.addEventListener( "error", function( event ) {
+      alert( 'Oops! Something went wrong.' );
+    } );
+
+    // Set up our request
+    XHR.open( "POST", "http://127.0.0.1:8002/password" );
+    XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+
+    // The data sent is what the user provided in the form
+    XHR.send(urlEncodedData);
+  }
+ 
+  // Access the form element...
+  const form = document.getElementById( "myForm" );
+
+  // ...and take over its submit event.
+  form.addEventListener( "submit", function ( event ) {
+    event.preventDefault();
+    sendData();
+  } );
+} );
+</script>
+</html>
