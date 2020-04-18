@@ -187,12 +187,8 @@ func getChars() passGen {
 
 	for _, i := range baseList {
 		pass.list = append(pass.list, i)
-		if upper {
-			pass.list = append(pass.list, strings.ToUpper(i))
-			pass.baseUpper = append(pass.baseUpper, strings.ToUpper(i))
-		} else {
-			continue
-		}
+		pass.list = append(pass.list, strings.ToUpper(i))
+		pass.baseUpper = append(pass.baseUpper, strings.ToUpper(i))
 	}
 
 	for _, num := range baseInt {
@@ -201,12 +197,8 @@ func getChars() passGen {
 	}
 
 	for _, v := range baseSpecial {
-		if special {
-			pass.list = append(pass.list, v)
-			pass.specialList = append(pass.specialList, v)
-		} else {
-			break
-		}
+		pass.list = append(pass.list, v)
+		pass.specialList = append(pass.specialList, v)
 	}
 
 	return pass
@@ -271,9 +263,10 @@ func (l *passGen) passValidation(pass string, count int) string {
 				break
 			}
 		} else {
+			fmt.Println("Here")
 			if strings.Contains(pass, val) {
-				pass = strings.Replace(pass, string(pass[mRand.Intn(len(pass)-7)]), l.mathRand(baseList), -1)
-				break
+				pass = strings.Replace(pass, string(pass[strings.IndexRune(pass, []rune(val)[0])]), l.mathRand(baseList), -1)
+				continue
 			}
 		}
 	}
@@ -288,8 +281,8 @@ func (l *passGen) passValidation(pass string, count int) string {
 			}
 		} else {
 			if strings.Contains(pass, val) {
-				pass = strings.Replace(pass, string(pass[mRand.Intn(len(pass)-7)]), l.mathRand(baseList), -1)
-				break
+				pass = strings.Replace(pass, string(pass[strings.IndexRune(pass, []rune(val)[0])]), l.mathRand(baseList), -1)
+				continue
 			}
 		}
 	}
