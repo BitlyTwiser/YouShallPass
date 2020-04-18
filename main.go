@@ -248,8 +248,7 @@ func randGen() []byte {
 //Validates that a given password holds a letter, number, and special char.
 func (l *passGen) passValidation(pass string, count int) string {
 	mRand.Seed(time.Now().UnixNano())
-	fmt.Println(l.baseUpper)
-	fmt.Println(l.specialList)
+
 	if len(pass) > count {
 		pass = pass[0:count]
 	}
@@ -260,7 +259,7 @@ func (l *passGen) passValidation(pass string, count int) string {
 				break
 			} else {
 				pass = strings.Replace(pass, string(pass[mRand.Intn(len(pass)-7)]), l.mathRand(l.specialList), -1)
-				break
+				continue
 			}
 		} else {
 			fmt.Println("Here")
