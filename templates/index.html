@@ -3,8 +3,9 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Simple Password Generator</title>
+    <title>Password Generator</title>
     <link rel="stylesheet" href="static/main.css">
+    <link rel='icon' href='static/logo.png' type='image/x-icon'/ >
 </head>
 <main id="app">
 <body>
@@ -28,7 +29,8 @@
 <hr>
 </div>
 <div>
-    <p id="pasword"></p>
+    <input type="text" id="password">
+    <button onclick="copyData()">Copy password</button>
 </div>
 </div>
 <br>
@@ -52,7 +54,7 @@
 
     // Define what happens on successful data submission
     XHR.addEventListener( "load", function(event) {
-        document.getElementById("pasword").innerHTML = `Password: ${JSON.parse(event.target.responseText)["Password"]}`;
+        document.getElementById("password").value = JSON.parse(event.target.responseText)["Password"]
       //alert( event.target.responseText );
     } );
 
@@ -79,5 +81,21 @@
     sendData();
   } );
 } );
+
+function copyData() {
+  /* Get the text field */
+  var copyText = document.getElementById("password");
+
+  /* Select the text field */
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+
+  /* Alert the copied text */
+  alert("Copied the text: " + copyText.value);
+};
+
 </script>
 </html>
