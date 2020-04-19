@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"html/template"
 	"log"
 	mRand "math/rand"
@@ -14,10 +17,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -187,8 +186,12 @@ func getChars() passGen {
 
 	for _, i := range baseList {
 		pass.list = append(pass.list, i)
-		pass.list = append(pass.list, strings.ToUpper(i))
-		pass.baseUpper = append(pass.baseUpper, strings.ToUpper(i))
+		if upper {
+			pass.list = append(pass.list, strings.ToUpper(i))
+			pass.baseUpper = append(pass.baseUpper, strings.ToUpper(i))
+		} else {
+			continue
+		}
 	}
 
 	for _, num := range baseInt {
@@ -197,8 +200,12 @@ func getChars() passGen {
 	}
 
 	for _, v := range baseSpecial {
-		pass.list = append(pass.list, v)
-		pass.specialList = append(pass.specialList, v)
+		if special {
+			pass.list = append(pass.list, v)
+			pass.specialList = append(pass.specialList, v)
+		} else {
+			break
+		}
 	}
 
 	return pass
@@ -248,7 +255,8 @@ func randGen() []byte {
 //Validates that a given password holds a letter, number, and special char.
 func (l *passGen) passValidation(pass string, count int) string {
 	mRand.Seed(time.Now().UnixNano())
-
+	fmt.Println(l.baseUpper)
+	fmt.Println(l.specialList)
 	if len(pass) > count {
 		pass = pass[0:count]
 	}
@@ -259,13 +267,13 @@ func (l *passGen) passValidation(pass string, count int) string {
 				break
 			} else {
 				pass = strings.Replace(pass, string(pass[mRand.Intn(len(pass)-7)]), l.mathRand(l.specialList), -1)
-				continue
+				break
 			}
 		} else {
-			fmt.Println("Here")
 			if strings.Contains(pass, val) {
-				pass = strings.Replace(pass, string(pass[strings.IndexRune(pass, []rune(val)[0])]), l.mathRand(baseList), -1)
-				continue
+				if strings.Contains(pass, val) {
+					pass = strings.Replace(pass, pass[strings.IndexRune(pass, val)], l.mathRand(baseList), -1)
+					continue
 			}
 		}
 	}
@@ -279,8 +287,10 @@ func (l *passGen) passValidation(pass string, count int) string {
 				break
 			}
 		} else {
+			//WE do not want a random value to be replaced here, we need the index of the value to exchange
+			//Use strings.indexrune to determine index of the value and then replace.
 			if strings.Contains(pass, val) {
-				pass = strings.Replace(pass, string(pass[strings.IndexRune(pass, []rune(val)[0])]), l.mathRand(baseList), -1)
+				pass = strings.Replace(pass, pass[strings.IndexRune(pass, val)], l.mathRand(baseList), -1)
 				continue
 			}
 		}
