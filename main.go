@@ -263,7 +263,6 @@ func (l *passGen) passValidation(pass string, count int) string {
 				continue
 			}
 		} else {
-			fmt.Println("Here")
 			if strings.Contains(pass, val) {
 				pass = strings.Replace(pass, string(pass[strings.IndexRune(pass, []rune(val)[0])]), l.mathRand(baseList), -1)
 				continue
@@ -294,7 +293,6 @@ func (l *passGen) passValidation(pass string, count int) string {
 			break
 		}
 	}
-	fmt.Println(pass)
 	return pass
 }
 
