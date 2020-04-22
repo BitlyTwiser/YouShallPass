@@ -28,7 +28,8 @@ var (
 	upper       bool
 	list        []string
 	baseList    = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
-	baseSpecial = []string{"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "-", ">", "<", "?", ",", ".", "/", "|", "\\", " "}
+	//baseSpecial = []string{"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "-", ">", "<", "?", ",", ".", "/", "|", "\\", " "}
+	baseSpecial = []string{"!","@","#","$","%","^","&","*"}
 	baseInt     = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
 	tpl         *template.Template
 )
@@ -262,7 +263,6 @@ func (l *passGen) passValidation(pass string, count int) string {
 				continue
 			}
 		} else {
-			fmt.Println("Here")
 			if strings.Contains(pass, val) {
 				pass = strings.Replace(pass, string(pass[strings.IndexRune(pass, []rune(val)[0])]), l.mathRand(baseList), -1)
 				continue
@@ -293,7 +293,6 @@ func (l *passGen) passValidation(pass string, count int) string {
 			break
 		}
 	}
-	fmt.Println(pass)
 	return pass
 }
 
