@@ -1,27 +1,40 @@
 .buttonHolder {
     text-align: center; 
+    color: black;
 }
 
 .button {
-    background-color: #4CAF50;
+    background-color: grey;
     border: none;
     color: white;
-    padding: 15px 32px;
+    padding: 20px;
     text-align: center;
     text-decoration: none;
-    display: flex; 
-    justify-content: center; 
     display: inline-block;
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
+    border-radius: 50%;
 }
 h2 {
     text-align: center;
+    color: black;
 }
 h1 {
     text-align: center;
+    color: black;
 }
 p {
     text-align: center;
+    color: black;
+}
+
+body,h1 {font-family: "Raleway", sans-serif}
+body, html {height: 100%}
+
+.bgimg {
+  background-image: url('http://127.0.0.1:8080/static/water.jpg');
+  min-height: 100%;
+  background-position: center;
+  background-size: cover;
 }

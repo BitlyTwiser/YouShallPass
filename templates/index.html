@@ -5,34 +5,40 @@
     <meta charset="UTF-8">
     <title>Password Generator</title>
     <link rel="stylesheet" href="static/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel='icon' href='static/logo.png' type='image/x-icon'/ >
 </head>
+<div class="bgimg w3-display-container w3-animate-opacity w3-text-white">
 <main id="app">
-<body>
-<hr>
-<h1>Random Password Generator</h1>
-<hr>
+<body style="background-color: #c0d5d8;">
+<div class="w3-display-middle"></div>
+<h1 class="w3-jumbo w3-animate-top" style="padding-top: 100px;">Random Password Generator</h1>
+<hr class="w3-border-grey" style="margin:auto;width:40%">
 <div class="buttonHolder">
 <form id="myForm">
     <label for="length">Password Length:</label><br>
     <input type="text" id="length" name="length" placeholder="8"><br>
 
     <input type="checkbox" id="specchar" name="specchar">
-    <label for="specchar">Special Character</label><br>
+    <label for="specchar">Special Character's</label><br>
 
     <input type="checkbox" id="uppercase" name="uppercase">
-    <label for="uppercase">Upper Case Characters</label><br>
+    <label for="uppercase">Upper Case Character's</label><br>
     
-    <input type="submit" value="Generate Password">
+    <input class="button" type="submit" value="Generate Password">
 </form> 
-<hr>
+<hr class="w3-border-grey" style="margin:auto;width:40%">
 </div>
-<div class='buttonHolder'>
-    <b>Password:</b> <input type="text" id="password">
-    <button onclick="copyData()">Copy password</button>
+<div class='buttonHolder' id='hidden' style="display:none;">
+    <h2>Password:</h2>
+    <p id="password"></p>
+    <!--<input type="text" id="password">-->
+    <button class="button" onclick="CopyToClipboard('password')">Copy password</button>
 </div>
 </div>
-<br>
+</div>
 </body>
 </main>
 <script>
@@ -53,7 +59,7 @@
 
     // Define what happens on successful data submission
     XHR.addEventListener( "load", function(event) {
-        document.getElementById("password").value = JSON.parse(event.target.responseText)["Password"]
+        document.getElementById("password").innerHTML = JSON.parse(event.target.responseText)["Password"]
       //alert( event.target.responseText );
     } );
 
@@ -78,12 +84,17 @@
   form.addEventListener( "submit", function ( event ) {
     event.preventDefault();
     sendData();
+    showDiv();
   } );
 } );
 
+function showDiv() {
+   document.getElementById('hidden').style.display = "block";
+};
+
 function copyData() {
   /* Get the text field */
-  var copyText = document.getElementById("password");
+  var copyText = document.getElementById("password").value;
 
   /* Select the text field */
   copyText.select();
@@ -94,6 +105,21 @@ function copyData() {
 
   /* Alert the copied text */
   alert("Copied the text: " + copyText.value);
+};
+
+function CopyToClipboard(containerid) {
+  if (document.selection) {
+    var range = document.body.createTextRange();
+    range.moveToElementText(document.getElementById(containerid));
+    range.select().createTextRange();
+    document.execCommand("copy");
+  } else if (window.getSelection) {
+    var range = document.createRange();
+    range.selectNode(document.getElementById(containerid));
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    alert("Text has been copied, now paste in the text-area")
+  }
 };
 
 </script>
