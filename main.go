@@ -17,7 +17,6 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -69,10 +68,6 @@ func main() {
 		os.Exit(0)
 	}
 	if webServer {
-		err := godotenv.Load()
-		if err != nil {
-			log.Printf("Error loading environment variables. Error: %v", err)
-		}
 		go run()
 		web()
 	}
@@ -95,8 +90,8 @@ func web() {
 			log.Printf("Error executing template: %v", err)
 		}
 	})
-	fmt.Println("Listening on port", os.Getenv("WEBPORT"))
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", os.Getenv("WEBPORT")), nil))
+	fmt.Println("Listening on port 8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func unquoteCodePoint(s string) (string, error) {
@@ -107,10 +102,9 @@ func unquoteCodePoint(s string) (string, error) {
 func run() {
 	//Load new router
 	mux := newRouter()
-	port := os.Getenv("PORT")
-	fmt.Println("Listening on ", port)
+	fmt.Println("Listening on 8002")
 	serv := &http.Server{
-		Addr: fmt.Sprintf(":%v", port),
+		Addr: ":8002",
 		Handler: handlers.CORS(
 			handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}),
