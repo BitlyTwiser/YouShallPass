@@ -49,7 +49,7 @@ func init() {
 	flag.StringVar(&wl, "wordlist", "", "Location of wordlist to utilize for password generation.")
 	flag.BoolVar(&webServer, "server", false, "Starts an Rest API to be queried for passwords. Also will generate a web UI running on port 8080")
 	flag.BoolVar(&upper, "upper", true, "Determines if one desires to have upper case characters within the generated password.")
-	flag.BoolVar(&special, "special", true, "Determines if one desires to DISABLE special characters within the generated password.")
+	flag.BoolVar(&special, "special", true, "Determines if one desires to have special characters within the generated password.")
 	tpl = template.Must(template.ParseGlob("templates/*"))
 }
 
