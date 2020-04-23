@@ -10,7 +10,7 @@
 ```
 # YouShallPass
 - Password Generator
-- Utilized as a web UI, base API to query, or command line application.
+- Utilized as a web UI, API to query, or command line application.
 
 # Usage:
 - Run install script which will perform the following actions:
