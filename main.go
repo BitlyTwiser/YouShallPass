@@ -20,15 +20,15 @@ import (
 )
 
 var (
-	count       int
-	webServer   bool
-	wl          string
-	special     bool
-	upper       bool
-	list        []string
-	baseList    = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
+	count     int
+	webServer bool
+	wl        string
+	special   bool
+	upper     bool
+	list      []string
+	baseList  = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
 	//baseSpecial = []string{"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "-", ">", "<", "?", ",", ".", "/", "|", "\\", " "}
-	baseSpecial = []string{"!","@","#","$","%","^","&","*"}
+	baseSpecial = []string{"!", "@", "#", "$", "%", "^", "&", "*"}
 	baseInt     = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
 	tpl         *template.Template
 )
@@ -205,7 +205,19 @@ func wordlist() passGen {
 
 	var data []string
 
-	content, err := os.Open("/home/smallz/Documents/gitclones/YouShallPass/wordlist.csv")
+	if _, err := os.Stat(wl); os.IsNotExist(err) {
+		dir, err := os.Getwd()
+		if err != nil {
+			log.Fatalf("Current working directory could not be found, please investigate this enigma. Error: %v", err)
+		}
+		log.Println("File does not exist. Defaulting to default wordlist location.")
+		if _, err := os.Stat(fmt.Sprintf("%v/wordlist/wordlist.csv", dir)); os.IsNotExist(err) {
+			log.Println("It appear that the default wordlist also does not exist, please check your github repo for the wordlist.csv")
+		} else {
+			wl = fmt.Sprintf("%v/wordlist/wordlist.csv", dir)
+		}
+	}
+	content, err := os.Open(wl)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
